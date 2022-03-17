@@ -1,6 +1,14 @@
-import 'package:eventify/homepage.dart';
+// import 'package:eventify/homepage.dart';
+// import 'package:eventify/signup_page.dart';
+// import 'package:eventify/signup_page.dart';
+// import 'package:eventify/signup_page.dart';
+// import 'package:eventify/signup_success.dart';
+// import 'package:eventify/signup_verification.dart';
+// import 'package:eventify/signup_verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'homepage.dart';
 
 void main() => runApp(const MyApp());
 

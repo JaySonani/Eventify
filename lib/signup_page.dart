@@ -1,4 +1,6 @@
+import 'package:eventify/signup_verification.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -8,7 +10,22 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final birthDateController = TextEditingController();
+  final passwordController = TextEditingController();
+  String profile = "";
   int radioValue = -1;
+
+  Map<String, String> signUpData = {
+    "username": "",
+    "password": "",
+    "firstname": "",
+    "lastname": "",
+    "birthdate": "",
+    "profile": "",
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -81,32 +98,40 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         SizedBox(
                           width: 210,
                           child: TextField(
-                            decoration: InputDecoration(hintText: "First name"),
+                            controller: firstNameController,
+                            decoration:
+                                const InputDecoration(hintText: "First name"),
                           ),
                         ),
                         SizedBox(
                           width: 210,
                           child: TextField(
-                            decoration: InputDecoration(hintText: "Last name"),
+                            controller: lastNameController,
+                            decoration:
+                                const InputDecoration(hintText: "Last name"),
                           ),
                         ),
                       ],
                     ),
-                    const TextField(
-                      decoration:
-                          InputDecoration(hintText: "Enter email address"),
+                    TextField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                          hintText: "Enter email address"),
                     ),
-                    const TextField(
-                      decoration: InputDecoration(
+                    TextField(
+                      controller: birthDateController,
+                      decoration: const InputDecoration(
                           hintText: "Enter date of birth(dd/mm/yyyy)"),
                     ),
-                    const TextField(
-                      decoration:
-                          InputDecoration(hintText: "Create your password"),
+                    TextField(
+                      obscureText: true,
+                      controller: passwordController,
+                      decoration: const InputDecoration(
+                          hintText: "Create your password"),
                     ),
                     SizedBox(
                       height: 70,
@@ -120,6 +145,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             onChanged: (value) {
                               setState(() {
                                 radioValue = int.parse(value.toString());
+                                profile = "normal_user";
                               });
                             },
                           ),
@@ -133,6 +159,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             onChanged: (value) {
                               setState(() {
                                 radioValue = int.parse(value.toString());
+                                profile = "event_organizer";
                               });
                             },
                           ),
@@ -144,7 +171,25 @@ class _SignUpPageState extends State<SignUpPage> {
                       width: double.infinity,
                       height: 40,
                       child: ElevatedButton(
-                        onPressed: (() {}),
+                        onPressed: (() {
+                          signUpData["username"] = emailController.text;
+                          signUpData["password"] = passwordController.text;
+                          signUpData["firstname"] = firstNameController.text;
+                          signUpData["lastname"] = lastNameController.text;
+                          signUpData["birthdate"] = birthDateController.text;
+                          signUpData["profile"] = profile;
+                          // debugPrint(signUpData.toString());
+
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              child: SignUpVerification(
+                                signupData: signUpData,
+                              ),
+                            ),
+                          );
+                        }),
                         child: const Text("Register"),
                       ),
                     ),

@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:eventify/dashboard.dart';
 import 'package:eventify/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,6 +16,51 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void login() async {
+    var headers = {
+      'Content-Type': 'application/json',
+    };
+    var request = http.Request(
+        'POST',
+        Uri.parse(
+            'http://eventify-env-flask.eba-cvewnpwp.us-east-1.elasticbeanstalk.com/login'));
+    request.body = json.encode({
+      "username": emailController.text,
+      "password": passwordController.text
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      debugPrint(await response.stream.bytesToString());
+      Navigator.push(
+        context,
+        PageTransition(
+          type: PageTransitionType.fade,
+          child: const DashBaoard(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Login failed. Please check your credentials."),
+        ),
+      );
+    }
+    setState(() {
+      loading = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -88,18 +137,27 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        label: Text("Enter email address"),
-                      ),
-                    ),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                          label: Text("Enter your password")),
-                    ),
+                    loading
+                        ? const CircularProgressIndicator()
+                        : Column(
+                            children: [
+                              TextField(
+                                controller: emailController,
+                                decoration: const InputDecoration(
+                                  label: Text("Enter email address"),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              TextField(
+                                controller: passwordController,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                    label: Text("Enter your password")),
+                              ),
+                            ],
+                          ),
                     SizedBox(
                       width: double.infinity,
                       height: 40,
@@ -114,7 +172,10 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           } else {
-                            // do login
+                            setState(() {
+                              loading = true;
+                            });
+                            login();
                           }
                         }),
                         child: const Text("Login"),
