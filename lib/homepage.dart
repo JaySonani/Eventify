@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:eventify/dashboard.dart';
-import 'package:eventify/signup_page.dart';
+import 'package:eventify/user_management/User.dart';
+import 'package:eventify/user_management/signup_page.dart';
+import 'package:eventify/networking/api.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -24,41 +23,44 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  void login() async {
-    var headers = {
-      'Content-Type': 'application/json',
-    };
-    var request = http.Request(
-        'POST',
-        Uri.parse(
-            'http://eventify-env-flask.eba-cvewnpwp.us-east-1.elasticbeanstalk.com/login'));
-    request.body = json.encode({
+  void login() {
+    EventifyAPIs.makePostRequest('${EventifyAPIs.COGNITO_API}/login', {
       "username": emailController.text,
       "password": passwordController.text
-    });
-    request.headers.addAll(headers);
+    }).then((response) {
+      if (response["statusCode"] == "200") {
+        // print(response);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.green,
+            content: Text("Login successful."),
+          ),
+        );
 
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      debugPrint(await response.stream.bytesToString());
-      Navigator.push(
-        context,
-        PageTransition(
-          type: PageTransitionType.fade,
-          child: const DashBaoard(),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text("Login failed. Please check your credentials."),
-        ),
-      );
-    }
-    setState(() {
-      loading = false;
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: DashBaoard(
+                user: User(
+              name: response['name'],
+              email: response['email'],
+              birthDate: response['dob'],
+              profile: response['profile'],
+            )),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text("Login failed. Please check your credentials."),
+          ),
+        );
+      }
+      setState(() {
+        loading = false;
+      });
     });
   }
 

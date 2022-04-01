@@ -1,4 +1,4 @@
-import 'package:eventify/signup_verification.dart';
+import 'package:eventify/user_management/signup_verification.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -145,11 +145,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             onChanged: (value) {
                               setState(() {
                                 radioValue = int.parse(value.toString());
-                                profile = "normal_user";
+                                profile = "attendee";
                               });
                             },
                           ),
-                          const Text("Normal registration"),
+                          const Text("Atendee"),
                           const SizedBox(
                             width: 20,
                           ),
@@ -159,11 +159,11 @@ class _SignUpPageState extends State<SignUpPage> {
                             onChanged: (value) {
                               setState(() {
                                 radioValue = int.parse(value.toString());
-                                profile = "event_organizer";
+                                profile = "organizer";
                               });
                             },
                           ),
-                          const Text("Event Organizer"),
+                          const Text("Organizer"),
                         ],
                       ),
                     ),

@@ -1,8 +1,6 @@
-import 'dart:convert';
-
-import 'package:eventify/signup_success.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:eventify/networking/api.dart';
+import 'package:eventify/user_management/signup_success.dart';
 import 'package:page_transition/page_transition.dart';
 
 class SignUpVerification extends StatefulWidget {
@@ -17,6 +15,7 @@ class SignUpVerification extends StatefulWidget {
 
 class _SignUpVerificationState extends State<SignUpVerification> {
   bool loading = true;
+  String statusCode = "";
 
   String profile = "";
   int radioValue = -1;
@@ -30,25 +29,38 @@ class _SignUpVerificationState extends State<SignUpVerification> {
   }
 
   void signUp() async {
-    var headers = {
-      'Content-Type': 'application/json',
-    };
-    var request = http.Request(
-        'POST',
-        Uri.parse(
-            'http://eventify-env-flask.eba-cvewnpwp.us-east-1.elasticbeanstalk.com/signup'));
-    request.body = json.encode(widget.signupData);
-    request.headers.addAll(headers);
+    EventifyAPIs.makePostRequest('${EventifyAPIs.COGNITO_API}/register', {
+      "username": widget.signupData["username"],
+      "password": widget.signupData["password"],
+      "firstname": widget.signupData["firstname"],
+      "lastname": widget.signupData["lastname"],
+      "birthdate": widget.signupData["birthdate"],
+      "profile": widget.signupData["profile"],
+    }).then((response) {
+      setState(() {
+        statusCode = response["statusCode"];
+      });
+      if (statusCode == "200") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text(response['message']),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(response['message']),
+          ),
+        );
+      }
 
-    http.StreamedResponse response = await request.send();
+      // print(response);
 
-    if (response.statusCode == 200) {
-      debugPrint(await response.stream.bytesToString());
-    } else {
-      debugPrint(response.reasonPhrase);
-    }
-    setState(() {
-      loading = false;
+      setState(() {
+        loading = false;
+      });
     });
   }
 
