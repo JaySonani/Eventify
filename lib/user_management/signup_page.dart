@@ -149,7 +149,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               });
                             },
                           ),
-                          const Text("Atendee"),
+                          const Text("Attendee"),
                           const SizedBox(
                             width: 20,
                           ),

@@ -2,6 +2,7 @@
 // import 'package:eventify/dashboard/admin_dashboard.dart';
 // import 'package:eventify/dashboard/attendee_dashboard.dart';
 import 'package:eventify/dashboard/organizer_dashboard.dart';
+import 'package:eventify/homepage.dart';
 // import 'package:eventify/homepage.dart';
 // import 'package:eventify/dashboard/organizer_dashboard.dart';
 // import 'package:eventify/homepage.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      // home: const HomePage(),
+      home: const HomePage(),
       // home: AdminDashboard(
       //     user: User(
       //   name: "AdminUser",
@@ -43,13 +44,13 @@ class MyApp extends StatelessWidget {
       //   profile: "atendee",
       // )),
 
-      home: OrganizerDashboard(
-        user: User(
-            name: "Jay Sonani",
-            email: "jsonani98@gmail.com",
-            birthDate: "asd",
-            profile: "Organizer"),
-      ),
+      // home: OrganizerDashboard(
+      //   user: User(
+      //       name: "Jay Sonani",
+      //       email: "jsonani98@gmail.com",
+      //       birthDate: "asd",
+      //       profile: "Organizer"),
+      // ),
       debugShowCheckedModeBanner: false,
     );
   }
