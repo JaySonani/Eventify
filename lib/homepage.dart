@@ -1,5 +1,7 @@
-import 'package:eventify/dashboard.dart';
-import 'package:eventify/user_management/User.dart';
+import 'package:eventify/dashboard/admin_dashboard.dart';
+import 'package:eventify/dashboard/attendee_dashboard.dart';
+import 'package:eventify/dashboard/organizer_dashboard.dart';
+import 'package:eventify/models/User.dart';
 import 'package:eventify/user_management/signup_page.dart';
 import 'package:eventify/networking/api.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void login() {
-    EventifyAPIs.makePostRequest('${EventifyAPIs.COGNITO_API}/login', {
+    EventifyAPIs.makePostRequest('${EventifyAPIs.API_URL}/login', {
       "username": emailController.text,
       "password": passwordController.text
     }).then((response) {
@@ -37,19 +39,49 @@ class _HomePageState extends State<HomePage> {
           ),
         );
 
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            type: PageTransitionType.fade,
-            child: DashBaoard(
-                user: User(
-              name: response['name'],
-              email: response['email'],
-              birthDate: response['dob'],
-              profile: response['profile'],
-            )),
-          ),
-        );
+        if (response["profile"] == "attendee") {
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+              type: PageTransitionType.fade,
+              child: AttendeeDashboard(
+                  user: User(
+                name: response['name'],
+                email: response['email'],
+                birthDate: response['dob'],
+                profile: response['profile'],
+              )),
+            ),
+          );
+        } else if (response["profile"] == "organizer") {
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+              type: PageTransitionType.fade,
+              child: OrganizerDashboard(
+                  user: User(
+                name: response['name'],
+                email: response['email'],
+                birthDate: response['dob'],
+                profile: response['profile'],
+              )),
+            ),
+          );
+        } else if (response["profile"] == "admin") {
+          Navigator.pushReplacement(
+            context,
+            PageTransition(
+              type: PageTransitionType.fade,
+              child: AdminDashboard(
+                  user: User(
+                name: response['name'],
+                email: response['email'],
+                birthDate: response['dob'],
+                profile: response['profile'],
+              )),
+            ),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

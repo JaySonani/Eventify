@@ -27,8 +27,8 @@ class _SignUpSucessState extends State<SignUpSucess> {
   }
 
   void verifyEmail() async {
-    EventifyAPIs.makePostRequest("${EventifyAPIs.COGNITO_API}/confirmregister",
-            widget.verificationData)
+    EventifyAPIs.makePostRequest(
+            "${EventifyAPIs.API_URL}/confirmregister", widget.verificationData)
         .then((response) {
       // print(response);
 
