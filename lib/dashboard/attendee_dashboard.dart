@@ -18,7 +18,7 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
   bool eventSelected = false;
   List<Event> events = [];
   bool loading = false;
-  bool approvalLoading = false;
+  bool bookingLoading = false;
 
   // var events = [for (var i = 1; i <= 10; i++) "Event Title $i"];
   Event selected_event = Event(
@@ -46,6 +46,7 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
   void loadEvents() async {
     setState(() {
       loading = true;
+      events = [];
     });
     var response = await EventifyAPIs.makeGetRequest(
         "${EventifyAPIs.API_URL}/get-approved-event");
@@ -86,40 +87,44 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
               Container(
                 // margin: EdgeInsets.symmetric(vertical: 10),
                 // height: 30,
-                child: OutlinedButton(
-                    style:
-                        OutlinedButton.styleFrom(backgroundColor: Colors.white),
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.fade,
-                            child: HomePage(),
-                          ),
-                          (route) => false);
-                      // Navigator.pushAndRemoveUntil(
+                child: Row(
+                  children: [
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                        onPressed: () {
+                          loadEvents();
+                        },
+                        child: Text(
+                          "Refresh",
+                          style: TextStyle(color: Colors.white),
+                        )),
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                child: HomePage(),
+                              ),
+                              (route) => false);
+                          // Navigator.pushAndRemoveUntil(
 
-                      // );
-                    },
-                    child: Text(
-                      "Log out",
-                      style: TextStyle(color: Colors.red),
-                    )),
+                          // );
+                        },
+                        child: Text(
+                          "Log out",
+                          style: TextStyle(color: Colors.red),
+                        )),
+                  ],
+                ),
               ),
               Text("Logged in as: ${widget.user.profile}"),
             ],
           )
         ],
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(widget.user.name),
-              accountEmail: Text(widget.user.email),
-            ),
-          ],
-        ),
       ),
       backgroundColor: Colors.white,
       body: loading == true
@@ -278,17 +283,49 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
                                       style: TextStyle(fontSize: 18),
                                     ),
 
-                                    Container(
-                                      width: double.infinity,
-                                      height: 60,
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: Text(
-                                          "Book now",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                    )
+                                    selected_event.event_availability == false
+                                        ? Container(
+                                            width: double.infinity,
+                                            height: 60,
+                                            child: Center(
+                                                child: Text(
+                                              "This event is full.",
+                                              style: TextStyle(fontSize: 20),
+                                            )),
+                                          )
+                                        : selected_event.event_participants
+                                                .contains(widget.user.username)
+                                            ? Container(
+                                                width: double.infinity,
+                                                height: 60,
+                                                child: Center(
+                                                    child: Text(
+                                                  "You have already booked for this event.",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                )),
+                                              )
+                                            : bookingLoading
+                                                ? Container(
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    width: double.infinity,
+                                                    height: 60,
+                                                    child: ElevatedButton(
+                                                      onPressed: () {
+                                                        bookEvent();
+                                                      },
+                                                      child: Text(
+                                                        "Book now",
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ),
+                                                    ),
+                                                  )
                                   ],
                                 )
                               : const Center(
@@ -303,28 +340,40 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
     );
   }
 
-  void approveEvent() async {
+  void bookEvent() async {
     setState(() {
-      approvalLoading = true;
+      bookingLoading = true;
     });
-    var response = await EventifyAPIs.makeGetRequest(
-        "${EventifyAPIs.API_URL}/admin-event-approve/?event_id=${selected_event.event_id}");
+    var response = await EventifyAPIs.makePostRequest(
+        "${EventifyAPIs.API_URL}/book-event", {
+      "event_id": selected_event.event_id,
+      "attendee_username": widget.user.username,
+    });
+
     print(response);
 
     if (response["statusCode"] == "200") {
       setState(() {
-        selected_event.event_isApproved = true;
+        selected_event.event_participants.add(widget.user.username);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content:
-              Text("Event ${selected_event.event_title} approved successfully"),
+          content: Text(response["message"]),
+        ),
+      );
+    } else if (response["statusCode"] == "400") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.yellow,
+          content: Text(response["message"]),
         ),
       );
     }
+
     setState(() {
-      approvalLoading = false;
+      bookingLoading = false;
     });
+    loadEvents();
   }
 }

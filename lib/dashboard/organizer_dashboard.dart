@@ -1,8 +1,9 @@
 import 'package:eventify/create_event.dart';
 import 'package:eventify/homepage.dart';
 import 'package:eventify/models/User.dart';
-import 'package:eventify/models/event.dart';
+import 'package:eventify/models/Event.dart';
 import 'package:eventify/networking/api.dart';
+import 'package:eventify/view_attendees.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -46,7 +47,9 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
   void loadEvents() async {
     setState(() {
       loading = true;
+      events = [];
     });
+
     var response = await EventifyAPIs.makeGetRequest(
         "${EventifyAPIs.API_URL}/get-organizer-event?organizer_email=${widget.user.email}");
     print(response);
@@ -87,44 +90,44 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
               Container(
                 // margin: EdgeInsets.symmetric(vertical: 10),
                 // height: 30,
-                child: OutlinedButton(
-                    style:
-                        OutlinedButton.styleFrom(backgroundColor: Colors.white),
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.fade,
-                            child: HomePage(),
-                          ),
-                          (route) => false);
-                      // Navigator.pushAndRemoveUntil(
+                child: Row(
+                  children: [
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                        onPressed: () {
+                          loadEvents();
+                        },
+                        child: Text(
+                          "Refresh",
+                          style: TextStyle(color: Colors.white),
+                        )),
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                child: HomePage(),
+                              ),
+                              (route) => false);
+                          // Navigator.pushAndRemoveUntil(
 
-                      // );
-                    },
-                    child: Text(
-                      "Log out",
-                      style: TextStyle(color: Colors.red),
-                    )),
+                          // );
+                        },
+                        child: Text(
+                          "Log out",
+                          style: TextStyle(color: Colors.red),
+                        )),
+                  ],
+                ),
               ),
               Text("Logged in as: ${widget.user.profile}"),
             ],
           )
         ],
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(widget.user.name),
-              accountEmail: Text(widget.user.email),
-            ),
-            // Text(widget.user.name),
-            // Text(widget.user.email),
-            // Text(widget.user.birthDate),
-            // Text(widget.user.profile),
-          ],
-        ),
       ),
       backgroundColor: Colors.white,
       body: loading == true
@@ -280,9 +283,42 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  selected_event.event_title,
-                                  style: const TextStyle(fontSize: 30),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      selected_event.event_title,
+                                      style: const TextStyle(fontSize: 30),
+                                    ),
+                                    decisionText.contains("approved")
+                                        ? SizedBox(
+                                            height: 40,
+                                            width: 200,
+                                            child: OutlinedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    PageTransition(
+                                                      type: PageTransitionType
+                                                          .fade,
+                                                      child: ViewAttendees(
+                                                          event: selected_event,
+                                                          user: widget.user),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text("View attendees"),
+                                                    Icon(Icons.arrow_right_alt)
+                                                  ],
+                                                )),
+                                          )
+                                        : Container(),
+                                  ],
                                 ),
                                 // const SizedBox(
                                 //   height: 20,

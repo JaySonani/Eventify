@@ -88,40 +88,44 @@ class _AdminDashboardState extends State<AdminDashboard> {
               Container(
                 // margin: EdgeInsets.symmetric(vertical: 10),
                 // height: 30,
-                child: OutlinedButton(
-                    style:
-                        OutlinedButton.styleFrom(backgroundColor: Colors.white),
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.fade,
-                            child: HomePage(),
-                          ),
-                          (route) => false);
-                      // Navigator.pushAndRemoveUntil(
+                child: Row(
+                  children: [
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.green),
+                        onPressed: () {
+                          loadEvents();
+                        },
+                        child: Text(
+                          "Refresh",
+                          style: TextStyle(color: Colors.white),
+                        )),
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                child: HomePage(),
+                              ),
+                              (route) => false);
+                          // Navigator.pushAndRemoveUntil(
 
-                      // );
-                    },
-                    child: Text(
-                      "Log out",
-                      style: TextStyle(color: Colors.red),
-                    )),
+                          // );
+                        },
+                        child: Text(
+                          "Log out",
+                          style: TextStyle(color: Colors.red),
+                        )),
+                  ],
+                ),
               ),
               Text("Logged in as: ${widget.user.profile}"),
             ],
           )
         ],
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(widget.user.name),
-              accountEmail: Text(widget.user.email),
-            ),
-          ],
-        ),
       ),
       backgroundColor: Colors.white,
       body: loading == true
@@ -395,6 +399,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       approvalLoading = false;
       decisionText = "You have approved this event";
     });
+    loadEvents();
   }
 
   void rejectEvent() async {
@@ -421,5 +426,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
       approvalLoading = false;
       decisionText = "You have rejected this event";
     });
+    loadEvents();
   }
 }

@@ -1,16 +1,6 @@
-// import 'package:eventify/create_event.dart';
-// import 'package:eventify/dashboard/admin_dashboard.dart';
-// import 'package:eventify/dashboard/attendee_dashboard.dart';
 import 'package:eventify/dashboard/organizer_dashboard.dart';
 import 'package:eventify/homepage.dart';
-// import 'package:eventify/homepage.dart';
-// import 'package:eventify/dashboard/organizer_dashboard.dart';
-// import 'package:eventify/homepage.dart';
-// import 'package:eventify/dashboard/organizer_dashboard.dart';
-// import 'package:eventify/homepage.dart';
 import 'package:eventify/models/User.dart';
-// import 'package:eventify/dashboard/organizer_dashboard.dart';
-// import 'package:eventify/user_management/User.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -31,6 +21,7 @@ class MyApp extends StatelessWidget {
       home: const HomePage(),
       // home: AdminDashboard(
       //     user: User(
+      //   username: "df8939a6-159b-43b4-aa66-c287cabc2dee",
       //   name: "AdminUser",
       //   email: "admin@user.com",
       //   birthDate: "24/11/1998",
@@ -38,14 +29,16 @@ class MyApp extends StatelessWidget {
       // )),
       // home: AttendeeDashboard(
       //     user: User(
-      //   name: "Vasu Gamdha",
-      //   email: "vasugamdhacan@gmail.com",
+      //   username: "d35765f2-7c9f-46ee-a3df-3f0bf56cfcdf",
+      //   name: "Harvik",
+      //   email: "harvik39@gmail.com",
       //   birthDate: "12/12/2022",
       //   profile: "atendee",
       // )),
 
       // home: OrganizerDashboard(
       //   user: User(
+      //       username: "85f05f32-c9a9-4cce-8c19-f5e1a5bb69e0",
       //       name: "Jay Sonani",
       //       email: "jsonani98@gmail.com",
       //       birthDate: "asd",

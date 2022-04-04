@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
               type: PageTransitionType.fade,
               child: AttendeeDashboard(
                   user: User(
+                username: response['username'],
                 name: response['name'],
                 email: response['email'],
                 birthDate: response['dob'],
@@ -60,6 +61,7 @@ class _HomePageState extends State<HomePage> {
               type: PageTransitionType.fade,
               child: OrganizerDashboard(
                   user: User(
+                username: response['username'],
                 name: response['name'],
                 email: response['email'],
                 birthDate: response['dob'],
@@ -74,6 +76,7 @@ class _HomePageState extends State<HomePage> {
               type: PageTransitionType.fade,
               child: AdminDashboard(
                   user: User(
+                username: response['username'],
                 name: response['name'],
                 email: response['email'],
                 birthDate: response['dob'],
@@ -227,10 +230,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           child: const Text("New user?"),
-                        ),
-                        TextButton(
-                          onPressed: () => {},
-                          child: const Text("Forget password?"),
                         ),
                       ],
                     ),
