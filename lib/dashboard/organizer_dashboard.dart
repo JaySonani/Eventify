@@ -21,6 +21,7 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
   List<Event> events = [];
   bool loading = false;
   String decisionText = "";
+  bool deleteLoading = false;
 
   Event selected_event = Event(
     event_id: "",
@@ -52,7 +53,7 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
 
     var response = await EventifyAPIs.makeGetRequest(
         "${EventifyAPIs.API_URL}/get-organizer-event?organizer_email=${widget.user.email}");
-    print(response);
+    // print(response);
     for (var event in response["events"]) {
       Event newEvent = new Event(
           event_id: event["event_id"],
@@ -291,33 +292,66 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
                                       selected_event.event_title,
                                       style: const TextStyle(fontSize: 30),
                                     ),
-                                    decisionText.contains("approved")
-                                        ? SizedBox(
-                                            height: 40,
-                                            width: 200,
-                                            child: OutlinedButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    PageTransition(
-                                                      type: PageTransitionType
-                                                          .fade,
-                                                      child: ViewAttendees(
-                                                          event: selected_event,
-                                                          user: widget.user),
+                                    Row(
+                                      children: [
+                                        decisionText.contains("approved")
+                                            ? SizedBox(
+                                                height: 40,
+                                                width: 150,
+                                                child: OutlinedButton(
+                                                    style: OutlinedButton
+                                                        .styleFrom(
+                                                      side: BorderSide(
+                                                          // width: 5.0,
+                                                          color: Colors.blue),
                                                     ),
-                                                  );
-                                                },
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text("View attendees"),
-                                                    Icon(Icons.arrow_right_alt)
-                                                  ],
-                                                )),
-                                          )
-                                        : Container(),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        PageTransition(
+                                                          type:
+                                                              PageTransitionType
+                                                                  .fade,
+                                                          child: ViewAttendees(
+                                                              event:
+                                                                  selected_event,
+                                                              user:
+                                                                  widget.user),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child:
+                                                        Text("View attendees")),
+                                              )
+                                            : Container(),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        SizedBox(
+                                          height: 40,
+                                          width: 100,
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                primary: Colors.red),
+                                            onPressed: () {
+                                              deleteEvent();
+                                            },
+                                            child: deleteLoading
+                                                ? SizedBox(
+                                                    height: 20,
+                                                    width: 20,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color: Colors.white,
+                                                    ),
+                                                  )
+                                                : const Text(
+                                                    "Delete",
+                                                  ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
                                 // const SizedBox(
@@ -405,5 +439,28 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
               ],
             ),
     );
+  }
+
+  void deleteEvent() async {
+    setState(() {
+      deleteLoading = true;
+    });
+
+    var response = await EventifyAPIs.makePostRequest(
+        "${EventifyAPIs.API_URL}/delete-event",
+        {"event_id": selected_event.event_id});
+    print(response);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor:
+            response["statusCode"] == "200" ? Colors.green : Colors.red,
+        content: Text(response["message"]),
+      ),
+    );
+    loadEvents();
+
+    setState(() {
+      deleteLoading = false;
+    });
   }
 }

@@ -1,3 +1,4 @@
+import 'package:eventify/dashboard/attendee_dashboard.dart';
 import 'package:eventify/dashboard/organizer_dashboard.dart';
 import 'package:eventify/homepage.dart';
 import 'package:eventify/models/User.dart';

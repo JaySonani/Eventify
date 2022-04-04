@@ -50,7 +50,6 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
     });
     var response = await EventifyAPIs.makeGetRequest(
         "${EventifyAPIs.API_URL}/get-approved-event");
-    // print(response["events"][0]);
     for (var event in response["events"]) {
       Event newEvent = new Event(
           event_id: event["event_id"],
@@ -348,6 +347,7 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
         "${EventifyAPIs.API_URL}/book-event", {
       "event_id": selected_event.event_id,
       "attendee_username": widget.user.username,
+      "attendee_email": widget.user.email
     });
 
     print(response);
