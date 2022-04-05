@@ -461,6 +461,7 @@ class _OrganizerDashboardState extends State<OrganizerDashboard> {
 
     setState(() {
       deleteLoading = false;
+      eventSelected = false;
     });
   }
 }

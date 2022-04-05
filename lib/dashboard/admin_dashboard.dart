@@ -47,6 +47,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   void loadEvents() async {
     setState(() {
+      events = [];
       loading = true;
     });
     var response = await EventifyAPIs.makeGetRequest(
@@ -194,6 +195,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                     onTap: () {
                                       setState(() {
                                         selected_event = events[index];
+                                        print(selected_event);
                                         eventSelected = true;
                                       });
                                     },
