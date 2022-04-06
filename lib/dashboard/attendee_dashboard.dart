@@ -4,6 +4,7 @@ import 'package:eventify/models/User.dart';
 import 'package:eventify/networking/api.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class AttendeeDashboard extends StatefulWidget {
   final User user;
@@ -340,40 +341,68 @@ class _AttendeeDashboardState extends State<AttendeeDashboard> {
   }
 
   void bookEvent() async {
-    setState(() {
-      bookingLoading = true;
-    });
-    var response = await EventifyAPIs.makePostRequest(
-        "${EventifyAPIs.API_URL}/book-event", {
-      "event_id": selected_event.event_id,
-      "attendee_username": widget.user.username,
-      "attendee_email": widget.user.email
-    });
+    await Alert(
+      context: context,
+      title: "Make a payment for \$25 CAD",
+      padding: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
+      content: TextField(
+        decoration: InputDecoration(labelText: "Enter your card number"),
+      ),
+      buttons: [
+        DialogButton(
+            color: Colors.grey,
+            child: Text(
+              "Cancel",
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        DialogButton(
+            color: Colors.green,
+            child: Text(
+              "Pay",
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () async {
+              Navigator.pop(context);
+              setState(() {
+                bookingLoading = true;
+              });
+              var response = await EventifyAPIs.makePostRequest(
+                  "${EventifyAPIs.API_URL}/book-event", {
+                "event_id": selected_event.event_id,
+                "attendee_username": widget.user.username,
+                "attendee_email": widget.user.email
+              });
 
-    print(response);
+              print(response);
 
-    if (response["statusCode"] == "200") {
-      setState(() {
-        selected_event.event_participants.add(widget.user.username);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green,
-          content: Text(response["message"]),
-        ),
-      );
-    } else if (response["statusCode"] == "400") {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.yellow,
-          content: Text(response["message"]),
-        ),
-      );
-    }
+              if (response["statusCode"] == "200") {
+                setState(() {
+                  selected_event.event_participants.add(widget.user.username);
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.green,
+                    content: Text(response["message"]),
+                  ),
+                );
+              } else if (response["statusCode"] == "400") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.yellow,
+                    content: Text(response["message"]),
+                  ),
+                );
+              }
 
-    setState(() {
-      bookingLoading = false;
-    });
-    loadEvents();
+              setState(() {
+                bookingLoading = false;
+              });
+              loadEvents();
+            }),
+      ],
+    ).show();
   }
 }

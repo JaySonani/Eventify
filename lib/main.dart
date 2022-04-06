@@ -1,7 +1,4 @@
-import 'package:eventify/dashboard/attendee_dashboard.dart';
-import 'package:eventify/dashboard/organizer_dashboard.dart';
 import 'package:eventify/homepage.dart';
-import 'package:eventify/models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
