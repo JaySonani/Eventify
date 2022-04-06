@@ -32,8 +32,6 @@ class _ViewAttendeesState extends State<ViewAttendees> {
     setState(() {
       loading = true;
     });
-    print(
-        "${EventifyAPIs.API_URL}/get-participants?event_id=${widget.event.event_id}");
     var response = await EventifyAPIs.makeGetRequest(
         "${EventifyAPIs.API_URL}/get-participants?event_id=${widget.event.event_id}");
     print(response);
@@ -42,7 +40,7 @@ class _ViewAttendeesState extends State<ViewAttendees> {
     });
     for (var user in response["participants"]) {
       User newUser = new User(
-          username: "dummt",
+          username: "dummy",
           name: user["name"],
           email: user["email"],
           birthDate: "dummy",

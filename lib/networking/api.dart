@@ -5,7 +5,7 @@ import 'package:http/http.dart';
 
 class EventifyAPIs {
   static const String API_URL =
-      "https://z65rawg1tl.execute-api.us-east-1.amazonaws.com/prod/";
+      "https://vrj4dote43.execute-api.us-east-1.amazonaws.com/prod/";
 
   static const String S3_BUCKET_URL =
       "https://eventifys3media.s3.amazonaws.com/";
